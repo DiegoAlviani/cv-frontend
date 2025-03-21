@@ -85,7 +85,7 @@ const handleAddProject = async () => {
 
   // 🔹 Sincroniza los datos cuando cambia el idioma o se actualiza `data`
   useEffect(() => {
-    console.log("📌 Datos recibidos en Projects.jsx:", data.projects);
+   // console.log("📌 Datos recibidos en Projects.jsx:", data.projects);
     if (Array.isArray(data.projects)) {
       setProjectsData(
         data.projects
@@ -108,9 +108,9 @@ const handleAddProject = async () => {
 
   const handleEditClick = (id, proj) => {
     setEditMode(id);
-    console.log("📌 Cargando proyecto para edición:", proj);
+   // console.log("📌 Cargando proyecto para edición:", proj);
     setEditedProject(extractLanguageData(proj));
-    console.log("📌 Datos cargados en editedProject:", editedProject);
+   // console.log("📌 Datos cargados en editedProject:", editedProject);
   };
 
   const handleChange = (e) => {
@@ -121,7 +121,7 @@ const handleAddProject = async () => {
   const handleSaveClick = async (id) => {
     const { id: _, ...updatedProj } = editedProject; // 🔹 Elimina `id` antes de enviar los datos
 
-    console.log("📌 Enviando actualización específica:", updatedProj);
+    //console.log("📌 Enviando actualización específica:", updatedProj);
 
     try {
       const response = await fetch(`${API.PROJECTS}/${id}/${language}`, {
@@ -137,7 +137,7 @@ const handleAddProject = async () => {
         const updatedResponse = await fetch(`${API.CV}?lang=${language}`);
         const updatedCvData = await updatedResponse.json();
 
-        console.log("📌 Datos actualizados después de guardar:", updatedCvData);
+       // console.log("📌 Datos actualizados después de guardar:", updatedCvData);
 
         // 🔹 ACTUALIZAR `projectsData` con la nueva data recibida
         setProjectsData(updatedCvData.projects);

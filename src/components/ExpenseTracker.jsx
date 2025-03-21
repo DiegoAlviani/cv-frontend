@@ -197,14 +197,14 @@ useEffect(() => {
       }
 
       const data = await response.json();
-      console.log("📊 Tasas de cambio obtenidas:", data.rates);
+      //console.log("📊 Tasas de cambio obtenidas:", data.rates);
 
       // 🔹 Extraemos solo las tasas de MXN y USD, asegurando que EUR sea 1
       const mxnToEur = data.rates.MXN ? (1 / data.rates.MXN) : 1;
       const usdToEur = data.rates.USD ? (1 / data.rates.USD) : 1;
 
-      console.log(`💱 1 MXN = ${mxnToEur.toFixed(6)} EUR`);
-      console.log(`💱 1 USD = ${usdToEur.toFixed(6)} EUR`);
+      //console.log(`💱 1 MXN = ${mxnToEur.toFixed(6)} EUR`);
+      //console.log(`💱 1 USD = ${usdToEur.toFixed(6)} EUR`);
 
       setExchangeRates({
         MXN: mxnToEur, // Conversión 1 MXN a EUR

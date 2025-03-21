@@ -40,7 +40,7 @@ export default function Contact({ data, setCvData }) {
   };
 
   const handleSaveClick = async () => {
-    console.log("📌 Enviando actualización específica:", contactData);
+    //console.log("📌 Enviando actualización específica:", contactData);
 
     try {
       const response = await fetch(`${API.CONTACT}/${language}`, {
@@ -50,13 +50,13 @@ export default function Contact({ data, setCvData }) {
       });
 
       if (response.ok) {
-        console.log(`✅ Datos de contacto actualizados en ${language}`);
+        //console.log(`✅ Datos de contacto actualizados en ${language}`);
 
         // 🔹 Volver a obtener todo el CV actualizado después de la edición
         const updatedResponse = await fetch(`${API.CV}?lang=${language}`);
         const updatedCvData = await updatedResponse.json();
 
-        console.log("📌 Datos actualizados después de guardar:", updatedCvData);
+       // console.log("📌 Datos actualizados después de guardar:", updatedCvData);
 
         // 🔹 Actualizar el estado global `setCvData`
         setCvData(updatedCvData);

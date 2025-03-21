@@ -12,7 +12,7 @@ export function CvDataProvider({ children }) {
     fetch(`${API.CV}?lang=${language}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("📌 Datos recibidos del backend:", data);
+       // console.log("📌 Datos recibidos del backend:", data);
         setCvData(data);
       })
       .catch((error) => console.error("Error al obtener datos del CV:", error));

@@ -30,7 +30,7 @@ export default function Languages({ data, setCvData }) {
 
   // 🔹 Sincroniza los datos cuando cambia el idioma o se actualiza `data`
   useEffect(() => {
-    console.log("📌 Datos recibidos en Languages.jsx:", data.languages);
+    //console.log("📌 Datos recibidos en Languages.jsx:", data.languages);
     if (Array.isArray(data.languages)) {
       setLanguagesData(
         data.languages
@@ -80,7 +80,7 @@ export default function Languages({ data, setCvData }) {
         const updatedResponse = await fetch(`${API.CV}?lang=${language}`);
         const updatedCvData = await updatedResponse.json();
 
-        console.log("📌 Datos actualizados después de guardar:", updatedCvData);
+        //console.log("📌 Datos actualizados después de guardar:", updatedCvData);
 
         // 🔹 ACTUALIZAR `languagesData` con la nueva data recibida
         setLanguagesData(updatedCvData.languages);

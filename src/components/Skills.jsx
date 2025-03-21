@@ -72,7 +72,7 @@ const handleAddSkill = async () => {
 
   // 🔹 Sincroniza los datos cuando cambia el idioma o se actualiza `data`
   useEffect(() => {
-    console.log("📌 Datos recibidos en Skills.jsx:", data.skills);
+   // console.log("📌 Datos recibidos en Skills.jsx:", data.skills);
     if (Array.isArray(data.skills)) {
       setSkillsData(
         data.skills
@@ -95,7 +95,7 @@ const handleAddSkill = async () => {
 
   const handleEdit = (id, skill) => {
     setEditMode(id);
-    console.log("📌 Cargando habilidad para edición:", skill);
+   // console.log("📌 Cargando habilidad para edición:", skill);
     setEditedSkill(extractLanguageData(skill));
   };
 
@@ -107,7 +107,7 @@ const handleAddSkill = async () => {
   const handleSave = async (id) => {
     const { id: _, ...updatedSkill } = editedSkill; // 🔹 Elimina `id` antes de enviar los datos
 
-    console.log("📌 Enviando actualización específica:", updatedSkill);
+   // console.log("📌 Enviando actualización específica:", updatedSkill);
 
     try {
       const response = await fetch(`${API.SKILLS}/${id}/${language}`, {
@@ -124,7 +124,7 @@ const handleAddSkill = async () => {
 
         const updatedCvData = await updatedResponse.json();
 
-        console.log("📌 Datos actualizados después de guardar:", updatedCvData);
+      //  console.log("📌 Datos actualizados después de guardar:", updatedCvData);
 
         // 🔹 ACTUALIZAR `skillsData` con la nueva data recibida
         setSkillsData(updatedCvData.skills);

@@ -36,7 +36,7 @@ function AppContent() {
     fetch(`${API.CV}?lang=${language}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("📌 Datos recibidos del backend:", data);
+      //  console.log("📌 Datos recibidos del backend:", data);
         setCvData(data);
         window.cvData = data; // 🔹 Guardar en window para acceso en consola
       })

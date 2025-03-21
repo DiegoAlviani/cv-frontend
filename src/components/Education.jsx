@@ -31,7 +31,7 @@ export default function Education({ data, setCvData }) {
   
   // 🔹 Sincroniza los datos cuando cambia el idioma o se actualiza `data`
   useEffect(() => {
-    console.log("📌 Datos recibidos en Education.jsx:", data.education);
+   // console.log("📌 Datos recibidos en Education.jsx:", data.education);
     if (Array.isArray(data.education)) {
       setEducationData(
         data.education
@@ -103,9 +103,9 @@ export default function Education({ data, setCvData }) {
   };
   const handleEdit = (id, edu) => {
     setEditMode(id);
-    console.log("📌 Cargando educación para edición:", edu);
+    //console.log("📌 Cargando educación para edición:", edu);
     setEditedEducation(extractLanguageData(edu));
-    console.log("📌 Datos cargados en editedEducation:", editedEducation);
+    //console.log("📌 Datos cargados en editedEducation:", editedEducation);
   };
 
   const handleChange = (e) => {
@@ -117,7 +117,7 @@ export default function Education({ data, setCvData }) {
     // ❌ Excluir `id` de los datos antes de enviarlos al backend
     const { id: _, ...updatedEdu } = editedEducation; 
 
-    console.log("📌 Enviando actualización específica (sin ID):", updatedEdu); // 🔹 Ver qué datos se están enviando
+    //console.log("📌 Enviando actualización específica (sin ID):", updatedEdu); // 🔹 Ver qué datos se están enviando
 
     try {
         const response = await fetch(`${API.EDUCATION}/${id}/${language}`, {
@@ -133,7 +133,7 @@ export default function Education({ data, setCvData }) {
             const updatedResponse = await fetch(`${API.CV}?lang=${language}`);
             const updatedCvData = await updatedResponse.json();
 
-            console.log("📌 Datos actualizados después de guardar:", updatedCvData);
+            //console.log("📌 Datos actualizados después de guardar:", updatedCvData);
 
             // 🔹 ACTUALIZAR `educationData` con la nueva data recibida
             setEducationData(updatedCvData.education);

@@ -55,7 +55,7 @@ export default function Profile({ data, setCvData }) {
   };
 
   const handleSaveClick = async () => {
-    console.log("📌 Enviando actualización específica:", editedProfile);
+    //console.log("📌 Enviando actualización específica:", editedProfile);
 
     try {
       const response = await fetch(`${API.PROFILE}/${language}`, {
@@ -71,7 +71,7 @@ export default function Profile({ data, setCvData }) {
         const updatedResponse = await fetch(`${API.CV}?lang=${language}`);
         const updatedCvData = await updatedResponse.json();
 
-        console.log("📌 Datos actualizados después de guardar:", updatedCvData);
+        //console.log("📌 Datos actualizados después de guardar:", updatedCvData);
 
         // 🔹 Actualizar el estado global `setCvData` con la nueva data recibida
         setCvData(updatedCvData);

@@ -116,9 +116,9 @@ export default function Experience({ data, setCvData }) {
 
   const handleEdit = (id, exp) => {
     setEditMode(id);
-    console.log("📌 Cargando experiencia para edición:", exp);
+    //console.log("📌 Cargando experiencia para edición:", exp);
     setEditedExperience(extractLanguageData(exp, language)); // 🔹 Usa la función optimizada
-    console.log("📌 Datos cargados en editedExperience:", editedExperience);
+    //console.log("📌 Datos cargados en editedExperience:", editedExperience);
   };
 
   const handleChange = (e) => {
@@ -129,7 +129,7 @@ export default function Experience({ data, setCvData }) {
   const handleSave = async (id) => {
     const updatedExp = { ...editedExperience };
   
-    console.log("📌 Enviando actualización específica:", updatedExp);
+    //console.log("📌 Enviando actualización específica:", updatedExp);
   
     try {
         // 🚀 Asegurar que la URL coincide con la estructura del backend
@@ -146,7 +146,7 @@ export default function Experience({ data, setCvData }) {
             const updatedResponse = await fetch(`${API.CV}?lang=${language}`);
             const updatedCvData = await updatedResponse.json();
 
-            console.log("📌 Datos actualizados después de guardar:", updatedCvData);
+           // console.log("📌 Datos actualizados después de guardar:", updatedCvData);
 
             // 🔹 ACTUALIZAR `experienceData` con la nueva data recibida
             setExperienceData(updatedCvData.experience);
