@@ -124,7 +124,7 @@ const generatePDF = async (data, language, returnBlob = false) => {
 
       finalY = doc.lastAutoTable.finalY + 10;
 
-      // 🔹 Sección de Experiencia Laboral
+     // 🔹 Sección de Experiencia Laboral
       doc.setFontSize(14);
       doc.text(data.dictionary?.header_experience, 70, finalY);
 
@@ -132,34 +132,34 @@ const generatePDF = async (data, language, returnBlob = false) => {
         startY: finalY + 5,
         margin: { left: 70 },
         headStyles: {
-          fillColor: [255, 255, 255], // 🔹 Fondo blanco en los encabezados
-          textColor: [0, 0, 0], // 🔹 Texto negro en los encabezados
-          fontSize: 11, // 🔹 Tamaño del texto en los encabezados
-          fontStyle: "bold", // 🔹 Texto en negrita
+          fillColor: [255, 255, 255],
+          textColor: [0, 0, 0],
+          fontSize: 11,
+          fontStyle: "bold",
         },
         columnStyles: {
-          0: { cellWidth: 38 }, // 🔹 Columna "Azienda" → 50 mm
-          1: { cellWidth: 37 }, // 🔹 Columna "Ruolo" → 40 mm
-          2: { cellWidth: 65 }, // 🔹 Columna "Descrizione" → 40 mm
+          0: { cellWidth: 38 },
+          1: { cellWidth: 37 },
+          2: { cellWidth: 65 },
         },
         styles: {
           fontSize: 9,
-          //minCellHeight: 5, // 🔹 Establece la altura mínima de cada celda (en mm)
         },
         didParseCell: (data) => {
-          if (data.section === "body" && data.column.index === 0) { // 🔹 Solo afecta la primera columna en el cuerpo
-            data.cell.styles.fontStyle = "bold"; // 🔹 Aplica negrita
+          if (data.section === "body" && data.column.index === 0) {
+            data.cell.styles.fontStyle = "bold";
           }
         },
-        tableWidth: "wrap", // 🔹 Ajusta la tabla automáticamente al contenido
+        tableWidth: "wrap",
         head: [[data.dictionary?.company, data.dictionary?.role, data.dictionary?.description]],
-        body: data.experience?.map(exp => [
-        exp.company + "\n\n" + exp.duration.replace("- ","\n"), // 🔹 Reemplaza "-" con un salto de línea
-        exp.role,
-        exp.description,
-        ]) 
+        body: [...data.experience]
+          .sort((a, b) => b.id - a.id) // ✅ Ordena de mayor a menor ID
+          .map(exp => [
+            exp.company + "\n\n" + exp.duration.replace("- ", "\n"),
+            exp.role,
+            exp.description,
+          ])
       });
-
       finalY = doc.lastAutoTable.finalY + 15;
 
       // 🔹 Sección de Proyectos
