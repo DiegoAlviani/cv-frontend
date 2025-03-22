@@ -888,139 +888,144 @@ const pieChartData = {
 
 
         {/* Lista de Gastos y Gráfico de Pastel */}
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "flex-start", gap: 6, mt: 3, width: "100%" }}>
+         <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" }, // 📱 column en mobile, 🖥️ row en desktop
+              justifyContent: "center",
+              alignItems: "flex-start",
+              gap: 6,
+              mt: 3,
+              width: "100%",
+            }}
+          >
           {/* Lista de Gastos */}
           <Box sx={{ flex: 3 }}>
             <Typography variant="h6" sx={{ textAlign: "left" }}>
               📋 Elenco Spese
             </Typography>
 
-                  <Table sx={{ mt: 2, width: "100%" }}>
-                  <TableHead>
-                  <TableRow>
-                    <TableCell 
-                      onClick={() => handleSort("name")} 
-                      sx={{ cursor: "pointer", whiteSpace: "nowrap", textAlign: "center" }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-                        <strong>Nome</strong>
-                        {sortConfig.key === "name" && (sortConfig.direction === "asc" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
-                      </Box>
-                    </TableCell>
+                <Box sx={{ overflowX: "auto" }}>
+                <Table sx={{ mt: 2, minWidth: 600 }}>
+                <TableHead>
+  <TableRow>
+    <TableCell 
+      onClick={() => handleSort("name")} 
+      sx={{ cursor: "pointer", whiteSpace: "nowrap", textAlign: "center", fontSize: { xs: "0.8rem", md: "1rem" }, px: { xs: 0.5, md: 2 }, py: { xs: 0.5, md: 1 } }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "left", gap: 1 }}>
+        <strong>Nome</strong>
+        {sortConfig.key === "name" && (sortConfig.direction === "asc" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+      </Box>
+    </TableCell>
 
-                    <TableCell 
-                      onClick={() => handleSort("category")} 
-                      sx={{ cursor: "pointer", whiteSpace: "nowrap", textAlign: "center" }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-                        <strong>Categoria</strong>
-                        {sortConfig.key === "category" && (sortConfig.direction === "asc" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
-                      </Box>
-                    </TableCell>
+    <TableCell 
+      onClick={() => handleSort("category")} 
+      sx={{ cursor: "pointer", whiteSpace: "nowrap", textAlign: "center", fontSize: { xs: "0.8rem", md: "1rem" }, px: { xs: 0.5, md: 2 }, py: { xs: 0.5, md: 1 } }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+        <strong>Categoria</strong>
+        {sortConfig.key === "category" && (sortConfig.direction === "asc" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+      </Box>
+    </TableCell>
 
-                    <TableCell 
-                      onClick={() => handleSort("amount")} 
-                      sx={{ cursor: "pointer", whiteSpace: "nowrap", textAlign: "center" }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-                        <strong>Importo (€)</strong>
-                        {sortConfig.key === "amount" && (sortConfig.direction === "asc" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
-                      </Box>
-                    </TableCell>
+    <TableCell 
+      onClick={() => handleSort("amount")} 
+      sx={{ cursor: "pointer", whiteSpace: "nowrap", textAlign: "center", fontSize: { xs: "0.8rem", md: "1rem" }, px: { xs: 0.5, md: 2 }, py: { xs: 0.5, md: 1 } }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+        <strong>Importo (€)</strong>
+        {sortConfig.key === "amount" && (sortConfig.direction === "asc" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+      </Box>
+    </TableCell>
 
-                    <TableCell 
-                      onClick={() => handleSort("status")} 
-                      sx={{ cursor: "pointer", whiteSpace: "nowrap", textAlign: "center" }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-                        <strong>Stato</strong>
-                        {sortConfig.key === "status" && (sortConfig.direction === "asc" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
-                      </Box>
-                    </TableCell>
+    <TableCell 
+      onClick={() => handleSort("status")} 
+      sx={{ cursor: "pointer", whiteSpace: "nowrap", textAlign: "center", fontSize: { xs: "0.8rem", md: "1rem" }, px: { xs: 0.5, md: 2 }, py: { xs: 0.5, md: 1 } }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+        <strong>Stato</strong>
+        {sortConfig.key === "status" && (sortConfig.direction === "asc" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+      </Box>
+    </TableCell>
+    {user && (
+      <TableCell sx={{ textAlign: "center", whiteSpace: "nowrap", fontSize: { xs: "0.8rem", md: "1rem" }, px: { xs: 0.5, md: 2 }, py: { xs: 0.5, md: 1 } }}>
+        <strong>Azioni</strong>
+      </TableCell>
+    )}
+  </TableRow>
+</TableHead>
 
-                    {/* 🔹 Ahora agregamos estilo uniforme a "Editar" y "Acciones" */}
-                    {user && (
-                    <TableCell sx={{ textAlign: "center", whiteSpace: "nowrap" }}>
-                      <strong>Modifica</strong>
-                    </TableCell>
-                      )}
-                      {user && (
-                    <TableCell sx={{ textAlign: "center", whiteSpace: "nowrap" }}>
-                      <strong>Azioni</strong>
-                    </TableCell>
-                    )}
-                  </TableRow>
-                </TableHead>
+<TableBody>
+  {sortedExpenses.length > 0 ? (
+    sortedExpenses.map((exp, index) => (
+      <TableRow key={index}>
+        <TableCell sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, px: { xs: 0.5, md: 2 }, py: { xs: 0.5, md: 1 } }}>{exp.name}</TableCell>
+        <TableCell sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, px: { xs: 0.5, md: 2 }, py: { xs: 0.5, md: 1 } }}>{exp.category}</TableCell>
+        <TableCell sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, px: { xs: 0.5, md: 2 }, py: { xs: 0.5, md: 1 } }}>
+          {new Intl.NumberFormat("es-ES", {
+            style: "currency",
+            currency: exp.currency || "EUR",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+            useGrouping: true,
+          }).format(exp.amount)}
+        </TableCell>
+        <TableCell sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, px: { xs: 0.5, md: 2 }, py: { xs: 0.5, md: 1 } }}>{exp.status}</TableCell>
+        
+        {user && (
+        <TableCell sx={{ whiteSpace: "nowrap", px: { xs: 0.5, md: 2 }, py: { xs: 0.5, md: 1 } }}>
+          {/* 🔧 Editar */}
+          <Tooltip title="Modifica Spesa">
+            <IconButton onClick={() => editExpense(index)}>
+              <EditIcon color="primary" />
+            </IconButton>
+          </Tooltip>
 
+          {/* 🔧 Marcar como pagado */}
+          <Tooltip title={exp.status === "pending" ? "Segnare come liquidato" : "Segna come in attesa"}>
+            <IconButton onClick={() => markAsPaid(exp.id)}>
+              <CheckCircleIcon color={exp.status === "paid" ? "success" : "default"} />
+            </IconButton>
+          </Tooltip>
 
+          {/* 🔧 Eliminar */}
+          <Tooltip title="Eliminare">
+            <IconButton onClick={() => deleteExpense(exp.id)}>
+              <DeleteIcon color="error" />
+            </IconButton>
+          </Tooltip>
+        </TableCell>
+      )}
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={6} sx={{ textAlign: "center", fontStyle: "italic", color: "gray", fontSize: { xs: "0.8rem", md: "1rem" }, px: { xs: 0.5, md: 2 }, py: { xs: 1, md: 2 } }}>
+        Non ci sono registrazioni di spesa per {selectedMonth} {selectedYear}.
+      </TableCell>
+    </TableRow>
+  )}
+</TableBody>
 
-                    <TableBody>
-                      {sortedExpenses.length > 0 ? (
-                        sortedExpenses.map((exp, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{exp.name}</TableCell>
-                            <TableCell>{exp.category}</TableCell>
-                            <TableCell>
-                              {new Intl.NumberFormat("es-ES", {
-                                style: "currency",
-                                currency: exp.currency || "EUR",
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 0,
-                                useGrouping: true,
-                              }).format(exp.amount)}
-                            </TableCell>
-                            <TableCell>{exp.status}</TableCell>
-                            {user && (
-                            <TableCell>
-                              <Tooltip title="Modifica Spesa">
-                                <IconButton onClick={() => editExpense(index)}>
-                                  <EditIcon color="primary" />
-                                </IconButton>
-                              </Tooltip>
-                            </TableCell>
-                            )}
-                            {user && (
-                            <TableCell sx={{ whiteSpace: "nowrap" }}>
-                              <Tooltip title={exp.status === "pending" ? "Segnare come liquidato" : "Segna come in attesa"}>
-                                <IconButton onClick={() => markAsPaid(exp.id)}>
-                                  <CheckCircleIcon color={exp.status === "paid" ? "success" : "default"} />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="Eliminare">
-                                <IconButton onClick={() => deleteExpense(exp.id)}>
-                                  <DeleteIcon color="error" />
-                                </IconButton>
-                              </Tooltip>
-                            </TableCell>
-                            )}
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={6} sx={{ textAlign: "center", fontStyle: "italic", color: "gray" }}>
-                          Non ci sono registrazioni di spesa per {selectedMonth} {selectedYear}.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
                   </Table>
-
+                  </Box>
           </Box>
 
           {/* Gráfico de pastel */}
           <Box sx={{ flex: 3, textAlign: "center" }}>
-  <Typography variant="h6">🥧 Distribuzione delle Spese</Typography>
-  <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-    {filteredExpenses.length > 0 ? (
-      <div style={{ width: "100%", maxWidth: "500px", height: "auto" }}>
-        <Doughnut data={pieChartData} options={pieChartOptions} />
-      </div>
-    ) : (
-      <Typography sx={{ color: "gray", fontStyle: "italic", mt: 2 }}>
-        Non sono disponibili dati per la visualizzazione del grafico.
-      </Typography>
-    )}
-  </Box>
+          <Typography variant="h6">🥧 Distribuzione delle Spese</Typography>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            {filteredExpenses.length > 0 ? (
+              <div style={{ width: "100%", maxWidth: "500px", height: "auto" }}>
+                <Doughnut data={pieChartData} options={pieChartOptions} />
+              </div>
+            ) : (
+              <Typography sx={{ color: "gray", fontStyle: "italic", mt: 2 }}>
+                Non sono disponibili dati per la visualizzazione del grafico.
+              </Typography>
+            )}
+          </Box>
 
             {/* Total Gastado y Restante */}
             <Box sx={{ textAlign: "center", mt: 3 }}>
