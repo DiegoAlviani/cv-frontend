@@ -54,7 +54,7 @@ export default function ExpenseTracker() {
     const [expenseAmount, setExpenseAmount] = useState("");
     const [filterCategory, setFilterCategory] = useState("Todas");
     const [editIncomeMode, setEditIncomeMode] = useState(false);
-    const [newIncome, setNewIncome] = useState({ amount: 0, currency: "EUR" });
+    const [newIncome, setNewIncome] = useState({ amount: "", currency: "EUR" });
 
 
  // Función para editar un gasto existente
@@ -65,7 +65,7 @@ export default function ExpenseTracker() {
   setEditIndex(index);
   setEditName(expense.name);
   setEditCategory(expense.category);
-  setEditAmount(expense.amount);
+  setEditAmount(Math.round(expense.amount));
   setExpenseCurrency(expense.currency || "EUR"); // 🔹 Asegura que la moneda se inicialice correctamente
 };
 
@@ -542,14 +542,22 @@ const pieChartData = {
     {/* Monto del gasto */}
     <TextField
       fullWidth
-      type="number"
+      type="text" // ✅ Control total del input
       label="Importo"
+      inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }} // ✅ Teclado numérico sin permitir letras ni símbolos
       value={editAmount}
-      onChange={(e) => setEditAmount(e.target.value)}
+      onChange={(e) => {
+        const value = e.target.value;
+        // ✅ Solo números enteros, sin punto ni coma
+        if (/^\d*$/.test(value)) {
+          setEditAmount(value);
+        }
+      }}
       sx={{ mb: 2 }}
-      error={!editAmount || parseFloat(editAmount) <= 0} // 🔹 Verifica que el monto sea mayor a 0
-      helperText={!editAmount || parseFloat(editAmount) <= 0 ? "Inserire un importo valido." : ""}
+      error={!editAmount || parseInt(editAmount) <= 0}
+      helperText={!editAmount || parseInt(editAmount) <= 0 ? "Inserire un importo valido." : ""}
     />
+
 
     {/* Botones de acción */}
     <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", mt: 2 }}>
@@ -689,13 +697,18 @@ const pieChartData = {
 
           <TextField
             fullWidth
-            type="number"
+            type="text"
             label="Ingresso (€)"
-            value={newIncome.amount || 0} // 🔹 Evita valores undefined
-            onChange={(e) =>
-              setNewIncome({ ...newIncome, amount: parseFloat(e.target.value) || 0 })
-            }
-            sx={{ mb: 2 }}
+            value={newIncome.amount}
+            inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || /^\d*$/.test(value)) {
+                setNewIncome({ ...newIncome, amount: value }); // ✅ permite borrar y escribir libre
+              }
+            }}
+            error={!newIncome.amount || parseInt(newIncome.amount) <= 0}
+            helperText={!newIncome.amount || parseInt(newIncome.amount) <= 0 ? "Inserire un importo valido." : ""}
           />
 
           <Button
@@ -754,7 +767,11 @@ const pieChartData = {
             color="primary"
             sx={{ mt: 2, width: "80%" }}
             onClick={() => {
-              setNewIncome(income);
+              setNewIncome({
+                amount: income?.amount > 0 ? String(Math.round(income.amount)) : "", // ✅ vacío si no hay ingreso, redondeado si lo hay
+                currency: income?.currency || "EUR"
+              });
+              
               setEditIncomeMode(true);
             }}
           >
@@ -862,12 +879,18 @@ const pieChartData = {
 
     <TextField
       fullWidth
-      type="number"
+      type="text" // ✅ Usamos texto para controlar mejor la entrada
       label="Importo"
       variant="outlined"
       margin="normal"
-      value={expenseAmount || ""} // 🔹 Asegura que siempre hay un valor
-      onChange={(e) => setExpenseAmount(e.target.value)}
+      value={expenseAmount || ""}
+      inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }} // ✅ Solo enteros
+      onChange={(e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) {
+          setExpenseAmount(value); // Solo guarda si es un número entero
+        }
+      }}
     />
 
     {/* 🔹 Moneda del gasto (Radio Buttons) */}
