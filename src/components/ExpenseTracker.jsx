@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef  } from "react";
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, DoughnutController, ArcElement } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { Box } from "@mui/material";
@@ -28,7 +28,8 @@ export default function ExpenseTracker() {
 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [expenses, setExpenses] = useState([]); // 🔹 Inicialización correcta
- 
+  const chartRef = useRef(null);
+
   // Obtiene la fecha actual y el mes/año actual
   const currentDate = new Date();
   const currentMonth = currentDate.toLocaleString("default", { month: "long" }); 
@@ -477,50 +478,55 @@ const formattedVisibleRemaining = new Intl.NumberFormat("es-ES", {
 
 // 🔹 Opciones del gráfico de pastel
 const pieChartOptions = {
+  animation: {
+    animateRotate: true,
+    animateScale: true,
+    duration: 1200,
+    easing: "easeOutBounce" // Puedes probar: "easeInOutQuad", "easeOutCirc", etc.
+  },
   plugins: {
     tooltip: {
       callbacks: {
         label: function (tooltipItem) {
           const categoryKey = tooltipItem.label;
-          const [categoryName, currency] = categoryKey.split("_");
-        
+          if (!expensesByCategory[categoryKey]) return "";
           const amountInEUR = expensesByCategory[categoryKey];
+          const currency = categoryKey.split("_")[1];
+          const categoryName = categoryKey.split("_")[0];
+
+          const matchingExpenses = expenses.filter(
+            (exp) => exp.category === categoryName && exp.currency === currency
+          );
+
+          const originalAmount = matchingExpenses.reduce(
+            (sum, exp) => sum + parseFloat(exp.amount || 0),
+            0
+          );
+
           const formattedEUR = `💶 ${new Intl.NumberFormat("es-ES", {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
             useGrouping: true
           }).format(amountInEUR)} €`;
-        
-          // Buscar los gastos originales en esa categoría y divisa
-          const matchingExpenses = expenses.filter(
-            exp => exp.category === categoryName && exp.currency === currency
-          );
-        
-          const originalAmount = matchingExpenses.reduce(
-            (sum, exp) => sum + parseFloat(exp.amount || 0),
-            0
-          );
-        
+
           const formattedOriginal = currency === "MXN"
-            ? ` (💵 ${new Intl.NumberFormat("es-ES", {
+            ? `🟢 ${new Intl.NumberFormat("es-ES", {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
                 useGrouping: true
-              }).format(originalAmount)} MXN)`
+              }).format(originalAmount)} MXN`
             : "";
-        
-          return `${categoryName}: ${formattedEUR}${formattedOriginal}`;
-        }        
+
+          return `${categoryName}: ${formattedEUR} ${formattedOriginal ? `(${formattedOriginal})` : ""}`;
+        }
       }
-    }
-    ,
+    },
     legend: {
       display: false
     }
-    
-    
   }
 };
+
 
 
 
@@ -1117,7 +1123,7 @@ const pieChartData = {
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             {filteredExpenses.length > 0 ? (
               <div style={{ width: "100%", maxWidth: "500px", height: "auto" }}>
-                <Doughnut data={filteredPieChartData} options={pieChartOptions} />
+                <Doughnut ref={chartRef} data={filteredPieChartData} options={pieChartOptions} />
                 <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 2 }}>
                   {labels.map((label, i) => {
                     const isHidden = hiddenCategories.includes(label);
@@ -1135,7 +1141,15 @@ const pieChartData = {
                           const updatedHidden = isHidden
                             ? hiddenCategories.filter((cat) => cat !== label)
                             : [...hiddenCategories, label];
+                        
                           setHiddenCategories(updatedHidden);
+                        
+                          // 🔄 Fuerza la actualización con animación
+                          setTimeout(() => {
+                            if (chartRef.current) {
+                              chartRef.current.update(); // Re-renderiza con transición
+                            }
+                          }, 100);
                         }}
                       >
                         <Box
