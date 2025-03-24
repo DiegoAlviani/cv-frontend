@@ -5,6 +5,10 @@
   padding: 2rem;
   text-align: center;
 }
+.chart-legend-custom .legend-item-hidden {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
 
 .logo {
   height: 6em;

@@ -55,6 +55,7 @@ export default function ExpenseTracker() {
     const [filterCategory, setFilterCategory] = useState("Todas");
     const [editIncomeMode, setEditIncomeMode] = useState(false);
     const [newIncome, setNewIncome] = useState({ amount: "", currency: "EUR" });
+    const [hiddenCategories, setHiddenCategories] = useState([]);
 
 
  // Función para editar un gasto existente
@@ -410,6 +411,7 @@ const expensesByCategory = expenses.reduce((acc, exp) => {
   const exchangeRate = exchangeRates[exp.currency] || 1; // 🔹 Obtener tasa de conversión
   const amountInEUR = exp.amount * exchangeRate; // 🔹 Convertir a EUR solo para el gráfico
   const categoryKey = `${exp.category}_${exp.currency}`; // 🔹 Mantener la moneda original en la clave
+  
 
   if (!acc[categoryKey]) {
     acc[categoryKey] = 0; // 🔹 Inicializamos la categoría
@@ -420,6 +422,59 @@ const expensesByCategory = expenses.reduce((acc, exp) => {
   return acc;
 }, {});
 
+const labels = Object.keys(expensesByCategory);
+const dataValues = Object.values(expensesByCategory);
+const backgroundColors = [
+  "#ff0000", // Rojo
+  "#ffbc00", // Naranja fuerte
+  "#85ff00", // Verde limón
+  "#00ff37", // Verde esmeralda
+  "#00fff3", // Cian
+  "#004fff", // Azul fuerte
+  "#6e00ff", // Violeta
+  "#ff00d4", // Fucsia
+  "#ff0018"  // Rojo cereza
+];
+
+// Aplicar filtro según hiddenCategories
+const visibleLabels = labels.filter((label) => !hiddenCategories.includes(label));
+const visibleData = labels.map((label, i) =>
+  !hiddenCategories.includes(label) ? dataValues[i] : null
+);
+const visibleColors = labels.map((_, i) =>
+  !hiddenCategories.includes(labels[i]) ? backgroundColors[i % backgroundColors.length] : null
+);
+const filteredPieChartData = {
+  labels: visibleLabels,
+  datasets: [
+    {
+      label: "Spese per Categoria",
+      data: visibleData.filter((v) => v !== null),
+      backgroundColor: visibleColors.filter((c) => c !== null)
+    }
+  ]
+};
+
+
+const visibleTotal = labels.reduce((sum, label, i) => {
+  if (hiddenCategories.includes(label)) return sum;
+  return sum + dataValues[i];
+}, 0);
+
+const visibleRemaining = convertedIncome - visibleTotal;
+
+const formattedVisibleTotal = new Intl.NumberFormat("es-ES", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+  useGrouping: true
+}).format(visibleTotal);
+
+const formattedVisibleRemaining = new Intl.NumberFormat("es-ES", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+  useGrouping: true
+}).format(visibleRemaining);
+
 
 // 🔹 Opciones del gráfico de pastel
 const pieChartOptions = {
@@ -427,31 +482,30 @@ const pieChartOptions = {
     tooltip: {
       callbacks: {
         label: function (tooltipItem) {
-          const categoryKey = tooltipItem.label; // 🔹 Obtener clave en formato "Transporte_MXN"
+          const categoryKey = tooltipItem.label;
           if (!expensesByCategory[categoryKey]) return "";
-
-          // 🔹 Extraer cantidad en EUR (para el gráfico)
           const amountInEUR = expensesByCategory[categoryKey];
-
-          // 🔹 Formatear el valor en EUR con formato correcto
           const formattedAmount = new Intl.NumberFormat("es-ES", {
             style: "currency",
-            currency: "EUR",  // 🔹 Siempre en EUR
+            currency: "EUR",
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
           }).format(amountInEUR);
-
-          // 🔹 Mantiene la categoría, pero muestra la cantidad en EUR
           return `${categoryKey.split("_")[0]}: ${formattedAmount}`;
         }
       }
+    },
+    legend: {
+      display: false
     }
+    
+    
   }
 };
 
 
-const labels = Object.keys(expensesByCategory);
-const dataValues = Object.values(expensesByCategory);
+
+
 
 
 // 🔹 Filtrar valores válidos (>0) para evitar segmentos invisibles en el gráfico
@@ -464,8 +518,11 @@ const pieChartData = {
   datasets: [
     {
       label: "Spese per Categoria",
-      data: Object.values(expensesByCategory), // 🔹 Usamos los valores convertidos correctamente
-      backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50", "#BA68C8", "#FFA500"],
+      data: dataValues,
+      backgroundColor: labels.map((_, i) => {
+        const step = Math.floor(backgroundColors.length / labels.length);
+        return backgroundColors[(i * step) % backgroundColors.length];
+      }),
     },
   ],
 };
@@ -1041,7 +1098,49 @@ const pieChartData = {
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             {filteredExpenses.length > 0 ? (
               <div style={{ width: "100%", maxWidth: "500px", height: "auto" }}>
-                <Doughnut data={pieChartData} options={pieChartOptions} />
+                <Doughnut data={filteredPieChartData} options={pieChartOptions} />
+                <Box sx={{ mt: 3, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 2 }}>
+                  {labels.map((label, i) => {
+                    const isHidden = hiddenCategories.includes(label);
+                    return (
+                      <Box
+                        key={i}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          cursor: "pointer",
+                          opacity: isHidden ? 0.5 : 1
+                        }}
+                        onClick={() => {
+                          const updatedHidden = isHidden
+                            ? hiddenCategories.filter((cat) => cat !== label)
+                            : [...hiddenCategories, label];
+                          setHiddenCategories(updatedHidden);
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: 16,
+                            height: 16,
+                            borderRadius: "50%",
+                            backgroundColor: backgroundColors[i % backgroundColors.length],
+                            border: "1px solid #ccc"
+                          }}
+                        />
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            textDecoration: isHidden ? "line-through" : "none"
+                          }}
+                        >
+                          {label.split("_")[0]}
+                        </Typography>
+                      </Box>
+                    );
+                  })}
+                </Box>
+
               </div>
             ) : (
               <Typography sx={{ color: "gray", fontStyle: "italic", mt: 2 }}>
@@ -1053,10 +1152,10 @@ const pieChartData = {
             {/* Total Gastado y Restante */}
             <Box sx={{ textAlign: "center", mt: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: "bold", color: "error.main" }}>
-              Totale speso:  {formattedTotalExpenses} €
+              Totale speso:  {formattedVisibleTotal} €
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: "bold", color: remaining < 0 ? "error.main" : "success.main" }}>
-              Rimanente: {formattedRemaining} € 
+              Rimanente: {formattedVisibleRemaining} €
               </Typography>
             </Box>
           </Box>
