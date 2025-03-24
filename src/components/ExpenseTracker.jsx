@@ -173,7 +173,6 @@ useEffect(() => {
 
       const data = await response.json();
       console.log("📊 Datos recibidos del backend:", data);
-      console.log("💰 Moneda seleccionada:", expenseCurrency);
 
       setIncome(data.income ?? { amount: 0, currency: "EUR" }); // ✅ Manejo correcto del income
       setCurrency(data.income?.currency ?? "EUR"); // ✅ Asegura que currency siempre tenga un valor
@@ -426,14 +425,14 @@ const labels = Object.keys(expensesByCategory);
 const dataValues = Object.values(expensesByCategory);
 const backgroundColors = [
   "#ff0000", // Rojo
-  "#ffbc00", // Naranja fuerte
-  "#85ff00", // Verde limón
-  "#00ff37", // Verde esmeralda
-  "#00fff3", // Cian
-  "#004fff", // Azul fuerte
   "#6e00ff", // Violeta
+  "#ffbc00", // Naranja fuerte
+  "#004fff", // Azul fuerte
+  "#85ff00", // Verde limón
   "#ff00d4", // Fucsia
-  "#ff0018"  // Rojo cereza
+  "#00ff37", // Verde esmeralda
+  "#ff0018",  // Rojo cereza
+  "#00fff3" // Cian
 ];
 
 // Aplicar filtro según hiddenCategories
@@ -483,18 +482,38 @@ const pieChartOptions = {
       callbacks: {
         label: function (tooltipItem) {
           const categoryKey = tooltipItem.label;
-          if (!expensesByCategory[categoryKey]) return "";
+          const [categoryName, currency] = categoryKey.split("_");
+        
           const amountInEUR = expensesByCategory[categoryKey];
-          const formattedAmount = new Intl.NumberFormat("es-ES", {
-            style: "currency",
-            currency: "EUR",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }).format(amountInEUR);
-          return `${categoryKey.split("_")[0]}: ${formattedAmount}`;
-        }
+          const formattedEUR = `💶 ${new Intl.NumberFormat("es-ES", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+            useGrouping: true
+          }).format(amountInEUR)} €`;
+        
+          // Buscar los gastos originales en esa categoría y divisa
+          const matchingExpenses = expenses.filter(
+            exp => exp.category === categoryName && exp.currency === currency
+          );
+        
+          const originalAmount = matchingExpenses.reduce(
+            (sum, exp) => sum + parseFloat(exp.amount || 0),
+            0
+          );
+        
+          const formattedOriginal = currency === "MXN"
+            ? ` (💵 ${new Intl.NumberFormat("es-ES", {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+                useGrouping: true
+              }).format(originalAmount)} MXN)`
+            : "";
+        
+          return `${categoryName}: ${formattedEUR}${formattedOriginal}`;
+        }        
       }
-    },
+    }
+    ,
     legend: {
       display: false
     }
@@ -1129,13 +1148,15 @@ const pieChartData = {
                           }}
                         />
                         <Typography
-                          variant="body2"
-                          sx={{
-                            textDecoration: isHidden ? "line-through" : "none"
-                          }}
-                        >
-                          {label.split("_")[0]}
-                        </Typography>
+                        variant="body2"
+                        sx={{
+                          textDecoration: isHidden ? "line-through" : "none",
+                          opacity: isHidden ? 0.5 : 1
+                        }}
+                      >
+                        {label.split("_")[0]} ({label.split("_")[1]})
+                      </Typography>
+
                       </Box>
                     );
                   })}
