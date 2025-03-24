@@ -510,7 +510,7 @@ const pieChartOptions = {
           }).format(amountInEUR)} €`;
 
           const formattedOriginal = currency === "MXN"
-            ? `🟢 ${new Intl.NumberFormat("es-ES", {
+            ? `💵 ${new Intl.NumberFormat("es-ES", {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
                 useGrouping: true
