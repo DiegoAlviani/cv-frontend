@@ -124,6 +124,11 @@ export default function Header({ setActiveSection, data }) {
               Controllo delle Spese
             </Button>
             )}
+            {user && (
+            <Button color="inherit" onClick={() => setActiveSection("visitors")}>
+            Estadísticas de Visitantes
+            </Button>
+            )}
           </Box>
         </Toolbar>
       </Container>

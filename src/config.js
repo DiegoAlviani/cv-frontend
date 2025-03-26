@@ -15,4 +15,6 @@ export const API = {
   FINANCE: `${API_BASE_URL}/finance`,
   EXCHANGE_RATES: `${API_BASE_URL}/exchange-rates`,
   PROFILE: `${API_BASE_URL}/cv/profile`,
+  VISITORS: `${API_BASE_URL}/visitors`,
+  VISITOR_STATS: `${API_BASE_URL}/visitors/stats`,
 };

@@ -13,6 +13,8 @@ import Contact from "./components/Contact";
 import Languages from "./components/Languages";
 import ExpenseTracker from "./components/ExpenseTracker"; 
 import Footer from "./components/Footer";
+import VisitorStats from "./components/VisitorStats"; 
+
 import { useState, useEffect } from "react";
 import { API } from "./config";
 
@@ -25,10 +27,38 @@ function AppContent() {
     localStorage.getItem("activeSection") || "profile"
   );
 
-  // 🔹 Guardar en localStorage cada vez que cambie la sección activa
-  useEffect(() => {
-    localStorage.setItem("activeSection", activeSection);
-  }, [activeSection]);
+// 🔄 Combinamos la carga de sección + registro de visita
+useEffect(() => {
+  // Guardar la sección activa en localStorage
+  localStorage.setItem("activeSection", activeSection);
+
+  // Solo registrar visitante en el primer render
+  if (!localStorage.getItem("visitorLogged")) {
+    fetch("https://ipinfo.io/json?token=06ce9c0616eb92")
+      .then((res) => res.json())
+      .then((data) => {
+        const visitorInfo = {
+          ip: data.ip,
+          city: data.city,
+          region: data.region,
+          country: data.country,
+          org: data.org,
+          loc: data.loc, 
+          timestamp: new Date().toISOString()
+        };
+
+        fetch(API.VISITORS, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(visitorInfo),
+        });
+
+        // Marca que ya se registró al visitante
+        localStorage.setItem("visitorLogged", "true");
+      })
+      .catch((err) => console.error("Error al obtener IP info:", err));
+  }
+}, [activeSection]);
 
   const [cvData, setCvData] = useState(null);
 
@@ -102,13 +132,15 @@ function AppContent() {
             <>
              
               {activeSection === "profile" && <Profile data={cvData} setCvData={setCvData} />}
-              {activeSection === "expenses" && <ExpenseTracker />} {/* 🔹 Cambia Profile por ExpenseTracker */}
+              {activeSection === "expenses" && <ExpenseTracker />} 
               {activeSection === "experience" && <Experience data={cvData} setCvData={setCvData} />}
               {activeSection === "education" && <Education data={cvData} setCvData={setCvData} />}
               {activeSection === "projects" && <Projects data={cvData} setCvData={setCvData} />}
               {activeSection === "skills" && <Skills data={cvData} setCvData={setCvData} />}
               {activeSection === "languages" && <Languages data={cvData} setCvData={setCvData} />}
               {activeSection === "contact" && <Contact data={cvData} setCvData={setCvData} />}
+              {activeSection === "visitors" && <VisitorStats />}
+
             </>
           ) : (
             <p>Loading...</p>
