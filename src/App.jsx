@@ -22,6 +22,14 @@ function AppContent() {
   const { language } = useLanguage();
   const { darkMode } = useThemeMode();
 
+  const [activeSection, setActiveSection] = useState(
+    localStorage.getItem("activeSection") || "profile"
+  );
+
+  useEffect(() => {
+    localStorage.setItem("activeSection", activeSection);
+  }, [activeSection]);
+  
   useEffect(() => {
     if (!localStorage.getItem("visitorLogged")) {
       fetch("https://ipinfo.io/json?token=06ce9c0616eb92")
