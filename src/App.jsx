@@ -22,43 +22,33 @@ function AppContent() {
   const { language } = useLanguage();
   const { darkMode } = useThemeMode();
 
-  // 🔹 Cargar sección activa desde localStorage o usar "profile" por defecto
-  const [activeSection, setActiveSection] = useState(
-    localStorage.getItem("activeSection") || "profile"
-  );
-
-// 🔄 Combinamos la carga de sección + registro de visita
-useEffect(() => {
-  // Guardar la sección activa en localStorage
-  localStorage.setItem("activeSection", activeSection);
-
-  // Solo registrar visitante en el primer render
-  if (!localStorage.getItem("visitorLogged")) {
-    fetch("https://ipinfo.io/json?token=06ce9c0616eb92")
-      .then((res) => res.json())
-      .then((data) => {
-        const visitorInfo = {
-          ip: data.ip,
-          city: data.city,
-          region: data.region,
-          country: data.country,
-          org: data.org,
-          loc: data.loc, 
-          timestamp: new Date().toISOString()
-        };
-
-        fetch(API.VISITORS, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(visitorInfo),
-        });
-
-        // Marca que ya se registró al visitante
-        localStorage.setItem("visitorLogged", "true");
-      })
-      .catch((err) => console.error("Error al obtener IP info:", err));
-  }
-}, [activeSection]);
+  useEffect(() => {
+    if (!localStorage.getItem("visitorLogged")) {
+      fetch("https://ipinfo.io/json?token=06ce9c0616eb92")
+        .then((res) => res.json())
+        .then((data) => {
+          const visitorInfo = {
+            ip: data.ip,
+            city: data.city,
+            region: data.region,
+            country: data.country,
+            org: data.org,
+            loc: data.loc,
+            timestamp: new Date().toISOString()
+          };
+  
+          fetch(API.VISITORS, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(visitorInfo),
+          });
+  
+          localStorage.setItem("visitorLogged", "true");
+        })
+        .catch((err) => console.error("Error al obtener IP info:", err));
+    }
+  }, []); // Solo una vez al montar
+  
 
   const [cvData, setCvData] = useState(null);
 
