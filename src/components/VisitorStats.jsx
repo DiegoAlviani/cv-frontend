@@ -99,7 +99,7 @@ export default function VisitorStats() {
                       <Marker key={index} position={[lat, lng]}>
                         <Popup>
                           <strong>{getFlagEmoji(loc.country)} {loc.city}, {loc.country}</strong><br />
-                          👤 {loc.count} visita{loc.count > 1 ? 's' : ''}<br />
+                          👤 {loc.count || 1} visita{(loc.count || 1) > 1 ? 's' : ''}
                           🗓️ Visita registrada
                         </Popup>
                       </Marker>
