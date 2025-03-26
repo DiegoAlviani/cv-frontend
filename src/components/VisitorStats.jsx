@@ -1,9 +1,22 @@
 import { useEffect, useState } from "react";
 import { Container, Typography, Card, CardContent, Grid, Box } from "@mui/material";
 import { API } from "../config"; // ajusta la ruta si estás en otra carpeta
+import { useThemeMode } from "../context/ThemeContext";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { useThemeMode } from "../context/ThemeContext";
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+// 🛠️ Fijar los íconos manualmente (soluciona el error 404 en producción)
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
 
 export default function VisitorStats() {
   const [stats, setStats] = useState({ todayUsers: 0, countries: {}, locations: [] });
