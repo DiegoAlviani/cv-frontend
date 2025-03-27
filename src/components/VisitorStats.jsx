@@ -17,6 +17,16 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
+const getMonthName = (monthNumber) => {
+  const months = [
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+  ];
+  return months[monthNumber];
+};
+
+const now = new Date();
+const currentMonthName = getMonthName(now.getMonth());
 
 export default function VisitorStats() {
   const [stats, setStats] = useState({ todayUsers: 0, countries: {}, locations: [] });
@@ -52,64 +62,84 @@ export default function VisitorStats() {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6} md={4}>
           <Card>
             <CardContent>
-              <Typography variant="h6">👤 Usuarios que nos visitaron hoy</Typography>
-              <Typography variant="h4" color="secondary" sx={{ mt: 1 }}>{stats.todayUsers}</Typography>
+              <Typography variant="h6">👤 Visitantes de hoy</Typography>
+              <Typography variant="h4" color="secondary" sx={{ mt: 1 }}>
+                {stats.todayUsers}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={6} md={4}>
           <Card>
             <CardContent>
-              <Typography variant="h6">🌐 Países y ciudades más frecuentes</Typography>
-              <Box sx={{ mt: 1 }}>
-                {countryList.map(([location, count], index) => (
-                  <Typography key={index} variant="body1">
-                    {location}: {count} visitas
-                  </Typography>
-                ))}
-              </Box>
+              <Typography variant="h6">📅 Visitantes de {currentMonthName}</Typography>
+              <Typography variant="h4" color="secondary" sx={{ mt: 1 }}>
+                {stats.monthlyUsers}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
 
         {/* 🗺️ Mapa interactivo con Leaflet */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                🗺️ Mapa de visitantes (por coordenadas geográficas)
-              </Typography>
-              <Box sx={{ height: "500px", width: "100%" }}>
-                <MapContainer center={[20, 0]} zoom={2} style={{ height: "100%", width: "100%" }}>
-                  <TileLayer
-                    url={
-                      darkMode
-                        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                        : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    }
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  />
-                  {stats.locations.map((loc, index) => {
-                    const [lat, lng] = loc.loc.split(",").map(Number);
-                    return (
-                      <Marker key={index} position={[lat, lng]}>
-                        <Popup>
-                          <strong>{getFlagEmoji(loc.country)} {loc.city}, {loc.country}</strong><br />
-                          👤 {loc.count || 1} visita{(loc.count || 1) > 1 ? 's' : ''}
-                          🗓️ Visita registrada
-                        </Popup>
-                      </Marker>
-                    );
-                  })}
-                </MapContainer>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+<Grid item xs={12}>
+  <Card>
+    <CardContent>
+      <Typography variant="h6" gutterBottom>
+        🗺️ Mapa de visitantes (por coordenadas geográficas)
+      </Typography>
+      <Box sx={{ height: "500px", width: "100%" }}>
+        <MapContainer center={[20, 0]} zoom={2} style={{ height: "100%", width: "100%" }}>
+          <TileLayer
+            url={
+              darkMode
+                ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            }
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          />
+          {stats.locations.map((loc, index) => {
+            const [lat, lng] = loc.loc.split(",").map(Number);
+            return (
+              <Marker key={index} position={[lat, lng]}>
+                <Popup>
+                  <strong>{getFlagEmoji(loc.country)} {loc.city}, {loc.country}</strong><br />
+                  🛰️ {loc.org || "Proveedor desconocido"}<br />
+                  👤 {loc.count || 1} visita{(loc.count || 1) > 1 ? 's' : ''}<br />
+                  🗓️ Visita registrada
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
+      </Box>
+    </CardContent>
+  </Card>
+</Grid>
+
+{/* 🌐 Países debajo y centrado */}
+<Grid item xs={12}>
+  <Card>
+    <CardContent sx={{ textAlign: "left" }}>
+      <Typography variant="h6">
+        🌐 Países y ciudades más frecuentes
+      </Typography>
+      <Box sx={{ mt: 1 }}>
+        {countryList.map(([location, count], index) => (
+          <Typography key={index} variant="body1">
+            {location}: {count} visita's
+          </Typography>
+        ))}
+      </Box>
+    </CardContent>
+  </Card>
+</Grid>
+
+
+
       </Grid>
     </Container>
   );
