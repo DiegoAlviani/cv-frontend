@@ -17,4 +17,5 @@ export const API = {
   PROFILE: `${API_BASE_URL}/cv/profile`,
   VISITORS: `${API_BASE_URL}/visitors`,
   VISITOR_STATS: `${API_BASE_URL}/visitors/stats`,
+  RECURRING_EXPENSES: `${API_BASE_URL}/api/recurring-expenses`
 };

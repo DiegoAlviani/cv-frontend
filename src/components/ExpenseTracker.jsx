@@ -12,6 +12,12 @@ import {
 import { API } from "../config"; // al inicio del archivo
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"; 
 import DeleteIcon from "@mui/icons-material/Delete"; 
+import RecurringExpenses from './RecurringExpenses';
+import { Settings } from "@mui/icons-material";
+import categories from "../utils/categories";
+
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+
 import "chart.js/auto";
 
 // Registra los componentes necesarios de Chart.js
@@ -25,6 +31,8 @@ export default function ExpenseTracker() {
   const [editAmount, setEditAmount] = useState("");
   const [expenseCurrency, setExpenseCurrency] = useState("EUR");
   const { user } = useAuth(); // 🔐 Verifica si estás logueado
+  const [recurringExpenses, setRecurringExpenses] = useState([]);
+  const [showRecurringModal, setShowRecurringModal] = useState(false);
 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [expenses, setExpenses] = useState([]); // 🔹 Inicialización correcta
@@ -34,9 +42,7 @@ export default function ExpenseTracker() {
   const currentDate = new Date();
   const currentMonth = currentDate.toLocaleString("default", { month: "long" }); 
   const currentYear = currentDate.getFullYear();
-
-  // Categorías de gastos predefinidas
-  const categories = ["Alimentazione", "Affitto", "Prestiti", "Formazione", "Trasporto", "Intrattenimento", "Salute", "Altro"];
+  
   // Función para cargar datos desde localStorage
   const loadFromLocalStorage = (key, defaultValue) => {
     const savedData = localStorage.getItem(key);
@@ -150,6 +156,22 @@ const sortedExpenses = [...filteredExpenses].sort((a, b) => {
 });
 const formattedMonth = monthMap[selectedMonth.toLowerCase()] || selectedMonth;
 
+const triggerRecurringMigration = async () => {
+  try {
+    const response = await fetch(`${API.FINANCE}/migrate-recurring-expenses`, {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      console.error("❌ No se pudo migrar gastos recurrentes automáticamente.");
+    } else {
+      console.log("✅ Verificación de gastos recurrentes ejecutada.");
+    }
+  } catch (error) {
+    console.error("❌ Error al llamar al endpoint de migración recurrente:", error);
+  }
+};
+
   // Efecto para guardar los datos en localStorage cuando cambian
 useEffect(() => {
   /** ───────────────────────────────────────────────
@@ -251,7 +273,9 @@ useEffect(() => {
         }
 
         console.log("✅ Gastos pendientes migrados al nuevo mes.");
-
+        // 🔁 NUEVO: Ejecutar migración de gastos recurrentes también
+        await triggerRecurringMigration();
+        await fetchFinanceData();
         // 🔹 Guardar el nuevo mes y año en localStorage para futuras comparaciones
         localStorage.setItem("lastCheckedMonth", currentMonth);
         localStorage.setItem("lastCheckedYear", `${currentYear}`);
@@ -553,7 +577,37 @@ const pieChartData = {
 };
  
   return (
+    
     <>
+        {/* Botón arriba a la derecha */}
+        <Box sx={{ width: "100%", mt: 2, display: "flex", justifyContent: "flex-end", pr: 2 }}>
+  <Button
+    variant="outlined"
+    size="small"
+    startIcon={<Settings />}
+    onClick={() => setShowRecurringModal(true)}
+  >
+    Gastos Recurrentes
+  </Button>
+</Box>
+
+
+{/* Modal  Gastos Recurrentes*/}
+{showRecurringModal && (
+      <Dialog open={showRecurringModal} onClose={() => setShowRecurringModal(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Gastos Recurrentes</DialogTitle>
+        <DialogContent>
+        <RecurringExpenses
+          recurringExpenses={recurringExpenses}
+          setRecurringExpenses={setRecurringExpenses}
+        />
+      </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowRecurringModal(false)}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
+    )}
+
 {/* Modal para editar gasto */}
 {editIndex !== null && (
   <Box
