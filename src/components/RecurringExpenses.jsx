@@ -42,7 +42,7 @@ const initialForm = {
   currency: "EUR",
 };
 
-const RecurringExpenses = ({ recurringExpenses, setRecurringExpenses }) => {
+const RecurringExpenses = ({ recurringExpenses, setRecurringExpenses, refreshExpenses }) => {
   const [form, setForm] = useState(initialForm);
   const [editingIndex, setEditingIndex] = useState(null);
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
@@ -117,6 +117,7 @@ const RecurringExpenses = ({ recurringExpenses, setRecurringExpenses }) => {
           if (response.ok) {
             await triggerRecurringMigration();  // <-- agrega esta línea aquí también
             await fetchRecurringExpenses(); // 🔄 Recargar lista completa
+            await refreshExpenses(); // 🔄 ¡Actualiza la lista de gastos reales!
             setForm(initialForm);
             setEditingIndex(null);
           } else {
@@ -145,6 +146,7 @@ const RecurringExpenses = ({ recurringExpenses, setRecurringExpenses }) => {
           setRecurringExpenses((prev) => [...prev, newExpense]);
           await triggerRecurringMigration(); 
           await fetchRecurringExpenses();
+          await refreshExpenses(); // 🔄 ¡Actualiza la lista de gastos reales!
           setForm(initialForm);
           setEditingIndex(null);
 
@@ -179,6 +181,7 @@ const RecurringExpenses = ({ recurringExpenses, setRecurringExpenses }) => {
   
       if (response.ok) {
         await fetchRecurringExpenses(); // 🔄 Recargar lista desde el backend
+        await refreshExpenses(); // 🔄 ¡Actualiza la lista de gastos reales!
         setDeleteIndex(null);
       } else {
         throw new Error("❌ Error al eliminar en el backend");

@@ -171,43 +171,43 @@ const triggerRecurringMigration = async () => {
     console.error("❌ Error al llamar al endpoint de migración recurrente:", error);
   }
 };
+const fetchFinanceData = async () => {
+  try {
+    const monthNumber = new Date(Date.parse(`${selectedMonth} 1, ${selectedYear}`)).getMonth() + 1;
 
+    console.log(`📡 Fetching data from: ${API.FINANCE}/${formattedMonth}/${selectedYear}`);
+    const response = await fetch(`${API.FINANCE}/${formattedMonth}/${selectedYear}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.warn(`⚠️ No hay datos para ${selectedMonth} ${selectedYear}, mostrando valores vacíos.`);
+        setIncome({ amount: 0, currency: "EUR" });
+        setExpenses([]);
+        return;
+      }
+      throw new Error("Error al obtener los datos del backend");
+    }
+
+    const data = await response.json();
+    console.log("📊 Datos recibidos del backend:", data);
+
+    setIncome(data.income ?? { amount: 0, currency: "EUR" }); // ✅ Manejo correcto del income
+    setCurrency(data.income?.currency ?? "EUR"); // ✅ Asegura que currency siempre tenga un valor
+    setExpenses(data.expenses ?? []);
+
+  } catch (error) {
+    console.error("❌ Error al obtener los datos financieros:", error);
+    setIncome({ amount: 0, currency: "EUR" });
+    setCurrency("EUR");
+    setExpenses([]);
+  }
+};
   // Efecto para guardar los datos en localStorage cuando cambian
 useEffect(() => {
   /** ───────────────────────────────────────────────
    * 📌 1️⃣ Función para obtener datos financieros (ingresos y gastos)
    * ─────────────────────────────────────────────── */
-  const fetchFinanceData = async () => {
-    try {
-      const monthNumber = new Date(Date.parse(`${selectedMonth} 1, ${selectedYear}`)).getMonth() + 1;
-
-      console.log(`📡 Fetching data from: ${API.FINANCE}/${formattedMonth}/${selectedYear}`);
-      const response = await fetch(`${API.FINANCE}/${formattedMonth}/${selectedYear}`);
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          console.warn(`⚠️ No hay datos para ${selectedMonth} ${selectedYear}, mostrando valores vacíos.`);
-          setIncome({ amount: 0, currency: "EUR" });
-          setExpenses([]);
-          return;
-        }
-        throw new Error("Error al obtener los datos del backend");
-      }
-
-      const data = await response.json();
-      console.log("📊 Datos recibidos del backend:", data);
-
-      setIncome(data.income ?? { amount: 0, currency: "EUR" }); // ✅ Manejo correcto del income
-      setCurrency(data.income?.currency ?? "EUR"); // ✅ Asegura que currency siempre tenga un valor
-      setExpenses(data.expenses ?? []);
-
-    } catch (error) {
-      console.error("❌ Error al obtener los datos financieros:", error);
-      setIncome({ amount: 0, currency: "EUR" });
-      setCurrency("EUR");
-      setExpenses([]);
-    }
-  };
+  fetchFinanceData(); 
 
   /** ───────────────────────────────────────────────
    * 💱 2️⃣ Función para obtener tasas de cambio desde el backend
@@ -600,6 +600,7 @@ const pieChartData = {
         <RecurringExpenses
           recurringExpenses={recurringExpenses}
           setRecurringExpenses={setRecurringExpenses}
+          refreshExpenses={fetchFinanceData} // ✅ PASAMOS LA FUNCIÓN
         />
       </DialogContent>
         <DialogActions>
