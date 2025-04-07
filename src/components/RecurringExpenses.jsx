@@ -318,36 +318,48 @@ const RecurringExpenses = ({ recurringExpenses, setRecurringExpenses, refreshExp
         </Box>
       </Box>
 
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+      <Box
+        display="flex"
+        flexDirection={{ xs: "column", sm: "row" }}
+        alignItems={{ xs: "stretch", sm: "center" }}
+        justifyContent="space-between"
+        gap={1}
+        mb={2}
+      >
         <TextField
-          size="small"
-          placeholder="Filtrar por nombre o categoría"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FilterList />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ width: 260 }}
-        />
-        <Box display="flex" gap={1}>
-          <Button onClick={() => toggleSort("name")} startIcon={<Sort />}>
-            Nombre
-          </Button>
-          <Button onClick={() => toggleSort("amount")} startIcon={<Sort />}>
-            Cantidad
-          </Button>
-          <Button onClick={() => toggleSort("category")} startIcon={<Sort />}>
-            Categoría
-          </Button>
-          <Button onClick={() => toggleSort("currency")} startIcon={<Sort />}>
-            Moneda
-          </Button>
-        </Box>
-      </Box>
+    size="small"
+    placeholder="Filtrar por nombre o categoría"
+    value={filter}
+    onChange={(e) => setFilter(e.target.value)}
+    InputProps={{
+      startAdornment: (
+        <InputAdornment position="start">
+          <FilterList />
+        </InputAdornment>
+      ),
+    }}
+    sx={{ width: { xs: "100%", sm: 260 } }}
+  />
+        <Box
+    display="flex"
+    flexWrap="wrap"
+    justifyContent={{ xs: "center", sm: "flex-start" }}
+    gap={1}
+  >
+    <Button onClick={() => toggleSort("name")} startIcon={<Sort />}>
+      Nombre
+    </Button>
+    <Button onClick={() => toggleSort("amount")} startIcon={<Sort />}>
+      Cantidad
+    </Button>
+    <Button onClick={() => toggleSort("category")} startIcon={<Sort />}>
+      Categoría
+    </Button>
+    <Button onClick={() => toggleSort("currency")} startIcon={<Sort />}>
+      Moneda
+    </Button>
+  </Box>
+</Box>
 
       <List dense>
         {filteredExpenses.map((expense, index) => (
